@@ -5,9 +5,8 @@
 #include <algorithm>
 #include <functional>
 #include <string>
+#include "Prime.h"
 using namespace std;
-
-int nextPrime(int n);
 
 // QuadraticProbing Hash table class
 //

@@ -60,11 +60,9 @@ Might need to modfiy for stl compliant
 #include <algorithm>
 #include <functional>
 #include <chrono>
+#include "Prime.h"
 using namespace std;
 using namespace std::chrono;
-
-
-int nextPrime(int n);
 
 // SeparateChaining Hash table class
 //
@@ -137,7 +135,7 @@ public:
 	void InsertIntoChainingHT(vector<HashedObj> DataArray)
 	{
 		typename vector<HashedObj>::iterator it = DataArray.begin();			//print data in array of strings
-		for (it; it != DataArray.end(); it++)
+		for (; it != DataArray.end(); it++)
 		{
 			//cout << count << ". " << *it << endl;
 			//count++;
@@ -205,7 +203,4 @@ private:
 		return hf(x) % theLists.size();			//
 	}
 };
-
-
-
-#endif SEPARATE_CHAINING_H
+#endif

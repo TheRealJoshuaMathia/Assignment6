@@ -78,7 +78,7 @@ int main(void)
 
 	int count = 0;
 	vector<string>::iterator it = DataArray.begin();			//print data in array of strings
-	for (it; it != DataArray.end(); it++)
+	for (; it != DataArray.end(); it++)
 	{
 		//cout << count << ". " << *it;
 		count++;
