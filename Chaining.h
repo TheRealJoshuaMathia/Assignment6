@@ -64,6 +64,9 @@ Might need to modfiy for stl compliant
 using namespace std;
 using namespace std::chrono;
 
+
+//int nextPrime(int n);
+
 // SeparateChaining Hash table class
 //
 // CONSTRUCTION: an approximate initial size or default of 101
@@ -75,10 +78,10 @@ using namespace std::chrono;
 // void makeEmpty( )      --> Remove all items
 
 template <typename HashedObj>
-class HashTable
+class HashTableCH
 {
 public:
-	explicit HashTable(int size = 101) : currentSize{ 0 }
+	explicit HashTableCH(int size = 101) : currentSize{ 0 }
 	{
 		theLists.resize(101);		//set hash table size to 101
 		this->CollisionsChainingHT = 0;
@@ -102,6 +105,13 @@ public:
 		return this->CollisionsChainingHT;
 	}
 
+	int getsearchtime(void) const
+	{
+		return this->SearchTimerChainingHT; 
+	}
+
+
+
 	void makeEmpty()
 	{
 		for (auto& thisList : theLists)			//set the hash table to empty 
@@ -111,54 +121,98 @@ public:
 	bool insert(const HashedObj& x)
 	{	//set timer t1 here
 		auto alg1st = high_resolution_clock::now(); //starting the counter clock 
-		auto& whichList = theLists[myhash(x)];				
-		if (find(begin(whichList), end(whichList), x) != end(whichList))
+		auto& whichList = theLists[myhash(x)];				//iterator = the hash position in the list
+		if (find(begin(whichList), end(whichList), x) != end(whichList))		//search if this item is already stored in the hash table 
 		{
-			return false;
+			return false;						//doesnt allow duplicates 
+		//	this->CollisionsChainingHT++;
 			
 		}
+	/*	if (whichList.empty() != true)
+		{
+			this->CollisionsChainingHT++;
+		}*/
+		this->CollisionsChainingHT++;
 		whichList.push_back(x);
-
-		// Rehash; see Section 5.5
-		if (++currentSize > theLists.size())
-			rehash();
+		//whichList.
+		// Rehash; see Section 5.5				//chaining doesnt do rehashing
+		//if (++currentSize > theLists.size())
+		//	rehash();
 
 		//set timer t2 here
 		auto alg1sp = high_resolution_clock::now();
-		auto duration1 = duration_cast<microseconds>(alg1sp - alg1st);
+		auto duration1 = duration_cast<microseconds>(alg1sp - alg1st);				//end timer count 
 
-		this->InsertionTimerChainingHT = this->InsertionTimerChainingHT + duration1.count(); 		//in microseconds 
+		this->InsertionTimerChainingHT = this->InsertionTimerChainingHT + duration1.count(); 		//in microseconds added onto total time 
 		return true;
 	}
 
 	//added 7:50
-	void InsertIntoChainingHT(vector<HashedObj> DataArray)
+	int InsertIntoChainingHT(vector<HashedObj> DataArray)
 	{
+		int count = 0; 
 		typename vector<HashedObj>::iterator it = DataArray.begin();			//print data in array of strings
-		for (; it != DataArray.end(); it++)
+		for (it; it != DataArray.end(); it++)
+		{
+			//cout << count << ". " << *it << endl;
+			count++;
+			this->insert(*it);
+		}
+
+		this->avginsertiontime = this->InsertionTimerChainingHT / count; 
+		return this->avginsertiontime;
+	}
+
+	//bool insert(HashedObj&& x)
+	//{	//where do i place collisions 
+	//	
+	//	auto& whichList = theLists[myhash(x)];			//returns iterator with string key value 
+	//	if (find(begin(whichList), end(whichList), x) != end(whichList))		//if you cant find the value 
+	//	{
+	//		this->CollisionsChainingHT++;
+	//		return false;
+	//		
+	//		
+	//	}
+	//	whichList.push_back(std::move(x));			//since there isnt a duplicate input into list 
+	////	this->CollisionsChainingHT++;
+	//	// Rehash; see Section 5.5
+	//	if (++currentSize > theLists.size())			//check the current size and rehash if needed
+	//		rehash();
+
+	//	return true;
+	//}
+
+	double SearchChainingHT(vector<HashedObj> QueryArray)
+	{
+		//loop through queryarray and search the hash table for each object 
+		bool success = false;
+		int searchcount = 0;				//used to track average 
+		typename vector<HashedObj>::iterator it = QueryArray.begin();			//print data in array of strings
+		for (it; it != QueryArray.end(); it++)
 		{
 			//cout << count << ". " << *it << endl;
 			//count++;
-			this->insert(*it);
+			//this->insert(*it);
+			searchcount++; 
+			auto searcht1 = high_resolution_clock::now();
+			//cout << "Searching for this: "<< *it << endl;				//print which item we are searching for 
+			success = this->contains(*it);								//search for the value within the table
+		//	cout << "Is found: " << success << endl;					//if found or not 
+			auto searcht2 = high_resolution_clock::now();
+			auto duration1 = duration_cast<microseconds>(searcht2 - searcht1);
+
+
+
+			this->SearchTimerChainingHT = this->SearchTimerChainingHT + duration1.count();  // send time to average 
 		}
+
+		double timeavg = 0.0; 
+		timeavg = this->SearchTimerChainingHT / searchcount; 
+		return timeavg; 
+
 	}
 
-	bool insert(HashedObj&& x)
-	{	//where do i place collisions 
-		auto& whichList = theLists[myhash(x)];			//returns iterator with string key value 
-		if (find(begin(whichList), end(whichList), x) != end(whichList))		//if you cant find the value 
-		{
-			return false;
-			
-		}
-		whichList.push_back(std::move(x));			//since there isnt a duplicate input into list 
-		//this->CollisionsChainingHT++;
-		// Rehash; see Section 5.5
-		if (++currentSize > theLists.size())			//check the current size and rehash if needed
-			rehash();
-
-		return true;
-	}
 
 	bool remove(const HashedObj& x)
 	{
@@ -180,6 +234,8 @@ private:
 	int InsertionTimerChainingHT;  //holds time to complete all insertions 
 	int CollisionsChainingHT;		 //tracks number of collisions, put inisde findpos() while loop 
 	int SearchTimerChainingHT;
+//	int avgsearchtime; 
+	int avginsertiontime;
 
 	void rehash()						//rezise the table 
 	{
@@ -203,4 +259,7 @@ private:
 		return hf(x) % theLists.size();			//
 	}
 };
-#endif
+
+
+
+#endif SEPARATE_CHAINING_H
