@@ -110,8 +110,6 @@ public:
 		return this->SearchTimerChainingHT; 
 	}
 
-
-
 	void makeEmpty()
 	{
 		for (auto& thisList : theLists)			//set the hash table to empty 
@@ -202,8 +200,6 @@ public:
 			auto searcht2 = high_resolution_clock::now();
 			auto duration1 = duration_cast<microseconds>(searcht2 - searcht1);
 
-
-
 			this->SearchTimerChainingHT = this->SearchTimerChainingHT + duration1.count();  // send time to average 
 		}
 
@@ -212,7 +208,6 @@ public:
 		return timeavg; 
 
 	}
-
 
 	bool remove(const HashedObj& x)
 	{
@@ -259,7 +254,4 @@ private:
 		return hf(x) % theLists.size();			//
 	}
 };
-
-
-
-#endif SEPARATE_CHAINING_H
+#endif

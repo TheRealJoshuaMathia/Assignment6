@@ -1,5 +1,4 @@
 
-
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -8,9 +7,8 @@
 #include <cstddef>
 #include <cstdlib>
 
-
 #include "Chaining.h"
-#include "QuadraticProbing.h"
+#include "Quadratic.h"
 #include "LinearProbing.h"
 
 //using namespace std::chrono;
