@@ -31,11 +31,14 @@ public:
 	explicit HashTableQP(int size = 101) : array(nextPrime(size))
 	{
 		makeEmpty();
+		this->CollisionsQuadraticHT = 0;
+		this->InsertionTimerQuadraticHT = 0; 
+		this->SearchTimerQuadraticHT = 0;
 	}
 
 	bool contains(const HashedObj& x) //const
 	{
-		return isActive(findPos(x,0));				//set to zero for collision  finding
+		return isActive(findPos(x));				//set to zero for collision  finding
 	}
 
 	int gettime(void) const
@@ -65,8 +68,8 @@ public:
 		// Insert x as active
 		int counter = 0; 
 		auto alg1st = high_resolution_clock::now();
-		int currentPos = findPos(x, &counter);
-		this->CollisionsQuadraticHT = this->CollisionsQuadraticHT + counter; 
+		int currentPos = findPos(x);
+	//	this->CollisionsQuadraticHT = this->CollisionsQuadraticHT + counter; 
 		//cout << "Collisions quad: " << counter; 
 		if (isActive(currentPos))
 			return false;
@@ -98,7 +101,7 @@ public:
 		{	//i think i did this wrong for both we need to continue to try to insert until it is succuessfully keep increasing if(su)
 			
 			
-			this->insert(*it);
+			this->insert(*it);//choose insertion s=function
 			//cout << count << ". " << *it << endl;			//probably works how do i test
 			count++;
 
@@ -110,7 +113,7 @@ public:
 	bool insert(HashedObj&& x)
 	{
 		// Insert x as active
-		int currentPos = findPos(x, 0);				//set to zero for collision finding
+		int currentPos = findPos(x);				//set to zero for collision finding
 		if (isActive(currentPos))
 			return false;
 
@@ -201,10 +204,10 @@ private:
 		return array[currentPos].info == ACTIVE;
 	}
 
-	int findPos(const HashedObj& x, int *collisioncount) //const
+	int findPos(const HashedObj& x) //const
 	{
 		int offset = 1;
-		int currentPos = myhash(x);
+		int currentPos = prefixHash(x);//myhash(x);//fullHash(x);						//myhash
 		int count = 0; 
 		while (array[currentPos].info != EMPTY &&
 			array[currentPos].element != x)
@@ -241,11 +244,95 @@ private:
 				insert(std::move(entry.element));
 	}
 
+
+	//same function but now it will allow for 
+	int findPosinsert(const HashedObj& x, int hashfunction) //
+	{
+		int offset = 1;
+		int currentPos = 0;
+		if (hashfunction == 1)							//allows for choosing which has function to use 
+		{
+			currentPos = prefixHash(x);						//myhash
+		}
+		else if (hashfunction == 2)
+		{
+			currentPos = simpleHash(x);
+		}
+		else
+		{
+			currentPos = fullHash(x);
+
+		}
+
+		int count = 0;
+		while (array[currentPos].info != EMPTY &&
+			array[currentPos].element != x)
+		{
+			count++;
+			this->CollisionsQuadraticHT = count + this->CollisionsQuadraticHT;
+			currentPos += offset;  // Compute ith probe
+			offset += 2;
+			if (currentPos >= array.size())
+				currentPos -= array.size();
+
+			//	count += 1;
+			//	cout << "Collisions: " << count << endl;
+				//*collisioncount = count;
+		}
+		//this->CollisionsQuadraticHT = count + this->CollisionsQuadraticHT;
+		//*collisioncount = count;
+		return currentPos;
+	}
+
+	//Hash fucntions 
 	size_t myhash(const HashedObj& x) const
 	{
 		static hash<HashedObj> hf;
 		return hf(x) % array.size();
 	}
+
+
+	unsigned int fullHash(const HashedObj& key) const
+	{
+		unsigned int hashval = 0;
+		for (char ch : key)
+		{
+			hashval = 37 * hashval + ch;
+
+		}
+		return hashval % this->array.size();// this->currentSize;
+	}
+
+	unsigned int simpleHash(const HashedObj& key)
+	{
+		unsigned int hashval = 0;
+		for (char ch : key)
+			hashval += ch; 
+		return hashval % this->array.size();
+	}
+
+
+	unsigned int prefixHash(const HashedObj& key) 
+	{
+		int output = 0;
+
+
+		if (key.size() >= 2)
+		{
+			output = ((key[0] + (27 * key[1]) + (729 * key[2])) % (this->array.size()));
+		}
+		else
+		{
+			output = key[0]  % this->array.size();
+			cout << "\nOUTPUT: " << output;
+		}
+		
+		return output; 
+	}
+
+
+
+
 };
 
 #endif
