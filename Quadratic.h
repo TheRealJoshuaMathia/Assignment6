@@ -63,12 +63,12 @@ public:
 			entry.info = EMPTY;
 	}
 
-	bool insert(const HashedObj& x)
+	bool insert(const HashedObj& x, int method)
 	{
 		// Insert x as active
 		int counter = 0; 
 		auto alg1st = high_resolution_clock::now();
-		int currentPos = findPos(x);
+		int currentPos = findPosinsert(x,method);
 	//	this->CollisionsQuadraticHT = this->CollisionsQuadraticHT + counter; 
 		//cout << "Collisions quad: " << counter; 
 		if (isActive(currentPos))
@@ -96,12 +96,16 @@ public:
 	{
 		int count = 0; 
 		//bool success;
+		int method = 0; 
+		cout << "Enter insertion method(1 for prefix,2for simple, 3 for fulllength)" << endl;
+		cin >> method;
+
 		typename vector<HashedObj>::iterator it = DataArray.begin();			//print data in array of strings
 		for (it; it != DataArray.end(); it++)
 		{	//i think i did this wrong for both we need to continue to try to insert until it is succuessfully keep increasing if(su)
 			
 			
-			this->insert(*it);//choose insertion s=function
+			this->insert(*it, method);//choose insertion s=function
 			//cout << count << ". " << *it << endl;			//probably works how do i test
 			count++;
 
@@ -324,7 +328,7 @@ private:
 		else
 		{
 			output = key[0]  % this->array.size();
-			cout << "\nOUTPUT: " << output;
+			//cout << "\nOUTPUT: " << output;
 		}
 		
 		return output; 
