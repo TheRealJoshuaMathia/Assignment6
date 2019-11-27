@@ -4,8 +4,8 @@ Class: Cpts 223
 Project: PA#6
 */
 
-#ifndef QUADRATIC_PROBING_H
-#define QUADRATIC_PROBING_H
+#ifndef QUADRATIC_H
+#define QUADRATIC_H
 
 #include <vector>
 #include <algorithm>
@@ -14,7 +14,7 @@ Project: PA#6
 #include "Prime.h"
 using namespace std;
 
-// QuadraticProbing Hash table class
+// Quadratic Probing Hash table class
 //
 // CONSTRUCTION: an approximate initial size or default of 101
 //
@@ -41,7 +41,7 @@ public:
     {
         return isActive(findPos(x));
     }
-    // handle the different quadratic implementation(aim2 to check if the element is contained in the HashTable 
+    // handle the different quadratic implementation(aim2) to check if the element is contained in the HashTable 
     bool contains(const HashedObj &x, int hash_code) const
     {
         switch (hash_code)
@@ -63,7 +63,7 @@ public:
         for (auto &entry : array)
             entry.info = EMPTY;
     }
-    // This function handles the insertion of each element
+    // This function handles the insertion of each object
     bool insert(const HashedObj &x)
     {
         // Insert x as active
@@ -71,7 +71,7 @@ public:
         if (isActive(currentPos))
             return false;
 
-        if (array[currentPos].info != DELETED)
+        if (array[currentPos].info != DELETED) // increasesize if active
             ++currentSize;
 
         array[currentPos].element = x;
@@ -85,9 +85,8 @@ public:
     }
 
     bool insert(const HashedObj &x, int hash_code)
-    { // HASH CODE = 1: simple; 2: prefix; 3: full
+    { 
         int currentPos;
-        // Insert x as active
         switch (hash_code)
         {
         case 1:
@@ -195,7 +194,7 @@ private:
 
         while (array[currentPos].info != EMPTY && array[currentPos].element != x)
         {
-            currentPos += offset; // Compute ith probe
+            currentPos += offset; 
             offset += 2;
             if (currentPos >= array.size())
                 currentPos -= array.size();
@@ -245,7 +244,7 @@ private:
         for (auto &entry : array)
             entry.info = EMPTY;
 
-        // Copy table over
+        // Copy table into new rehashed table
         currentSize = 0;
         for (auto &entry : oldArray)
             if (entry.info == ACTIVE)

@@ -162,6 +162,6 @@ private:
         return hf(x) % array.size();
     }
 };
-} // namespace Linear
+}
 
 #endif

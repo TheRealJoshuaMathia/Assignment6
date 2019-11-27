@@ -4,8 +4,8 @@ Class: Cpts 223
 Project: PA#6
 */
 
-#ifndef SEPARATE_CHAINING_H
-#define SEPARATE_CHAINING_H
+#ifndef CHAINING_H
+#define CHAINING_H
 
 #include <vector>
 #include <list>
@@ -93,19 +93,17 @@ public:
     }
 
 private:
-    vector<list<HashedObj>> theLists; // The array of Lists
+    vector<list<HashedObj>> theLists;
     int currentSize;
 
     void rehash()
     {
         vector<list<HashedObj>> oldLists = theLists;
 
-        // Create new double-sized, empty table
         theLists.resize(nextPrime(2 * theLists.size()));
         for (auto &thisList : theLists)
             thisList.clear();
 
-        // Copy table over
         currentSize = 0;
         for (auto &thisList : oldLists)
             for (auto &x : thisList)
@@ -118,6 +116,5 @@ private:
         return hf(x) % theLists.size();
     }
 };
-} // namespace Chaining
-
+}
 #endif

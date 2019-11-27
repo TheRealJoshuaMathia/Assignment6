@@ -42,9 +42,8 @@ Stat searchHashT(vector<string> QueryArray, Quadratic::HashTable<string> hashT);
 void printInsertStats(Stat data);
 void printSearchStats(Stat data);
 
-
 //------------------------------------------------
-// Aim 2 functions 
+// Aim 2 functions
 Stat insertIntoHashTSimple(vector<string> DataArray, Quadratic::HashTable<string> hashT);
 Stat insertIntoHashTPrefix(vector<string> DataArray, Quadratic::HashTable<string> hashT);
 Stat insertIntoHashTFull(vector<string> DataArray, Quadratic::HashTable<string> hashT);

@@ -1,5 +1,4 @@
 #include "App.h"
-
 /*
 Authors: Parker Guillen, Josh Mathia
 Class: Cpts 223
@@ -118,22 +117,21 @@ int main()
     printSearchStats(quadraticFullSearch);
 }
 
+// This function inserts 
 Stat insertIntoHashT(vector<string> DataArray, Chaining::HashTable<string> hashT)
 {
     Stat data;
 
     auto alg1st = high_resolution_clock::now();
-    for (auto it = DataArray.crbegin(); it != DataArray.crend(); ++it)
+    for (auto it = DataArray.begin(); it != DataArray.end(); ++it)
     {
         if (!hashT.contains(*it))
         {
             hashT.insert(*it);
             data.count++;
         }
-        else if (hashT.contains(*it))
-        {
-            data.collisions++;
-        }
+        
+            //data.collisions++;
     }
     auto algsp = high_resolution_clock::now();
 
@@ -147,7 +145,7 @@ Stat insertIntoHashT(vector<string> DataArray, Linear::HashTable<string> hashT)
     Stat data;
     auto alg1st = high_resolution_clock::now();
 
-    for (auto it = DataArray.crbegin(); it != DataArray.crend(); ++it)
+    for (auto it = DataArray.begin(); it != DataArray.end(); ++it)
     {
         if (!hashT.contains(*it))
         {
@@ -172,7 +170,7 @@ Stat insertIntoHashT(vector<string> DataArray, Quadratic::HashTable<string> hash
     Stat data;
     auto alg1st = high_resolution_clock::now();
 
-    for (auto it = DataArray.crbegin(); it != DataArray.crend(); ++it)
+    for (auto it = DataArray.begin(); it != DataArray.end(); ++it)
     {
         if (!hashT.contains(*it))
         {
@@ -190,6 +188,7 @@ Stat insertIntoHashT(vector<string> DataArray, Quadratic::HashTable<string> hash
     data.timer = duration.count();
     return data;
 }
+//This function prints the statisitcs for each insert function
 void printInsertStats(Stat data)
 {
     cout << "Insertion Time: " << data.timer << endl
@@ -198,7 +197,7 @@ void printInsertStats(Stat data)
          << "Timer Per Insertions: " << (data.timer / data.count) << endl
          << endl;
 }
-
+//This function prints the statistics for each search function
 void printSearchStats(Stat data)
 {
     cout << "Search Time: " << data.timer << endl
@@ -206,12 +205,13 @@ void printSearchStats(Stat data)
          << "Time Per Search: " << (data.timer / data.count) << endl
          << endl;
 }
+
 Stat insertIntoHashTSimple(vector<string> DataArray, Quadratic::HashTable<string> hashT)
 {
     Stat data;
 
     auto alg1st = high_resolution_clock::now();
-    for (auto it = DataArray.crbegin(); it != DataArray.crend(); ++it)
+    for (auto it = DataArray.begin(); it != DataArray.end(); ++it)
     {
         if (!hashT.contains(*it))
         {
@@ -234,7 +234,7 @@ Stat insertIntoHashTPrefix(vector<string> DataArray, Quadratic::HashTable<string
 {
     Stat data;
     auto alg1st = chrono::high_resolution_clock::now();
-    for (auto it = DataArray.crbegin(); it != DataArray.crend(); ++it)
+    for (auto it = DataArray.begin(); it != DataArray.end(); ++it)
     {
         if (!hashT.contains(*it))
         {
@@ -256,7 +256,7 @@ Stat insertIntoHashTFull(vector<string> DataArray, Quadratic::HashTable<string> 
 {
     Stat data;
     auto alg1st = chrono::high_resolution_clock::now();
-    for (auto it = DataArray.crbegin(); it != DataArray.crend(); ++it)
+    for (auto it = DataArray.begin(); it != DataArray.end(); ++it)
     {
         if (!hashT.contains(*it))
         {
@@ -280,7 +280,7 @@ Stat searchHashT(vector<string> QueryArray, Chaining::HashTable<string> hashT)
 {
     Stat data;
     auto alg1st = chrono::high_resolution_clock::now();
-    for (auto i = QueryArray.crbegin(); i != QueryArray.crend(); ++i)
+    for (auto i = QueryArray.begin(); i != QueryArray.end(); ++i)
     {
         hashT.contains(*i);
         data.count++;
@@ -295,7 +295,7 @@ Stat searchHashT(vector<string> QueryArray, Linear::HashTable<string> hashT)
 {
     Stat data;
     auto alg1st = chrono::high_resolution_clock::now();
-    for (auto i = QueryArray.crbegin(); i != QueryArray.crend(); ++i)
+    for (auto i = QueryArray.begin(); i != QueryArray.end(); ++i)
     {
         hashT.contains(*i);
         data.count++;
@@ -310,7 +310,7 @@ Stat searchHashT(vector<string> QueryArray, Quadratic::HashTable<string> hashT)
 {
     Stat data;
     auto alg1st = chrono::high_resolution_clock::now();
-    for (auto i = QueryArray.crbegin(); i != QueryArray.crend(); ++i)
+    for (auto i = QueryArray.begin(); i != QueryArray.end(); ++i)
     {
 
         hashT.contains(*i);
@@ -328,7 +328,7 @@ Stat searchHashTSimple(vector<string> QueryArray, Quadratic::HashTable<string> h
 {
     Stat data;
     auto alg1st = chrono::high_resolution_clock::now();
-    for (auto i = QueryArray.crbegin(); i != QueryArray.crend(); ++i)
+    for (auto i = QueryArray.begin(); i != QueryArray.end(); ++i)
     {
         hashT.contains(*i, 1);
         data.count++;
@@ -346,7 +346,7 @@ Stat searchHashTPrefix(vector<string> QueryArray, Quadratic::HashTable<string> h
 {
     Stat data;
     auto alg1st = chrono::high_resolution_clock::now();
-    for (auto i = QueryArray.crbegin(); i != QueryArray.crend(); ++i)
+    for (auto i = QueryArray.begin(); i != QueryArray.end(); ++i)
     {
         hashT.contains(*i, 2);
         data.count++;
@@ -363,7 +363,7 @@ Stat searchHashTFull(vector<string> QueryArray, Quadratic::HashTable<string> has
 {
     Stat data;
     auto alg1st = chrono::high_resolution_clock::now();
-    for (auto i = QueryArray.crbegin(); i != QueryArray.crend(); ++i)
+    for (auto i = QueryArray.begin(); i != QueryArray.end(); ++i)
     {
         hashT.contains(*i, 3);
         data.count++;
