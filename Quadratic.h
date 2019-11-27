@@ -25,315 +25,257 @@ template <typename HashedObj>
 class HashTable
 {
 public:
-	explicit HashTableQP(int size = 101) : array(nextPrime(size))
-	{
-		makeEmpty();
-		this->CollisionsQuadraticHT = 0;
-		this->InsertionTimerQuadraticHT = 0; 
-		this->SearchTimerQuadraticHT = 0;
-	}
+    explicit HashTable(int size = 101) : array(nextPrime(size)) 
+    { 
+        makeEmpty(); 
+    }
 
-	bool contains(const HashedObj& x) //const
-	{
-		return isActive(findPos(x));				//set to zero for collision  finding
-	}
+    //checks status of the array index
+    bool contains(const HashedObj &x)const
+    {
+        return isActive(findPos(x));
+    }
+    // handle the different quadratic implementation(aim2 to check if the element is contained in the HashTable 
+    bool contains(const HashedObj &x, int hash_code) const
+    {
+        switch (hash_code)
+        {
+        case 1:
+            return isActive(findPos_simple(x));
+        case 2:
+            return isActive(findPos_prefix(x));
+        case 3:
+            return isActive(findPos_full(x));
+        default:
+            return isActive(findPos(x));
+        }
+    }
+    //Makes the function empty
+    void makeEmpty()
+    {
+        currentSize = 0;
+        for (auto &entry : array)
+            entry.info = EMPTY;
+    }
+    // This function handles the insertion of each element
+    bool insert(const HashedObj &x)
+    {
+        // Insert x as active
+        int currentPos = findPos(x);
+        if (isActive(currentPos))
+            return false;
 
-	int gettime(void) const
-	{
-		return this->InsertionTimerQuadraticHT;
-	}
+        if (array[currentPos].info != DELETED)
+            ++currentSize;
 
-	int getcollisions() const
-	{
-		return this->CollisionsQuadraticHT;
-	}
+        array[currentPos].element = x;
+        array[currentPos].info = ACTIVE;
 
-	int getsearchtime(void) const
-	{
-		return this->SearchTimerQuadraticHT;
-	}
+        // Rehash; see Section 5.5
+        if (currentSize > array.size() / 2)
+            rehash();
 
-	void makeEmpty()
-	{
-		currentSize = 0;
-		for (auto& entry : array)
-			entry.info = EMPTY;
-	}
+        return true;
+    }
 
-	bool insert(const HashedObj& x, int method)
-	{
-		// Insert x as active
-		int counter = 0; 
-		auto alg1st = high_resolution_clock::now();
-		int currentPos = findPosinsert(x,method);
-	//	this->CollisionsQuadraticHT = this->CollisionsQuadraticHT + counter; 
-		//cout << "Collisions quad: " << counter; 
-		if (isActive(currentPos))
-			return false;
+    bool insert(const HashedObj &x, int hash_code)
+    { // HASH CODE = 1: simple; 2: prefix; 3: full
+        int currentPos;
+        // Insert x as active
+        switch (hash_code)
+        {
+        case 1:
+            currentPos = findPos_simple(x);
+            break;
+        case 2:
+            currentPos = findPos_prefix(x);
+            break;
+        case 3:
+            currentPos = findPos_full(x);
+            break;
+        default:
+            currentPos = findPos(x);
+        }
 
-		if (array[currentPos].info != DELETED)
-			++currentSize;
+        if (isActive(currentPos))
+            return false;
 
-		array[currentPos].element = x;
-		array[currentPos].info = ACTIVE;
+        if (array[currentPos].info != DELETED)
+            ++currentSize;
 
-		// Rehash; see Section 5.5
-		if (currentSize > array.size() / 2)
-			rehash();
+        array[currentPos].element = x;
+        array[currentPos].info = ACTIVE;
 
-		auto alg1sp = high_resolution_clock::now();
-		auto duration1 = duration_cast<microseconds>(alg1sp - alg1st);
-		this->InsertionTimerQuadraticHT = this->InsertionTimerQuadraticHT + duration1.count();
-		//cout << this->InsertionTimerQuadraticHT;
+        // Rehash; see Section 5.5
+        if (currentSize > array.size() / 2)
+            rehash();
 
-		return true;
-	}
+        return true;
+    }
 
-	int InsertIntoQuadraticHT(vector<HashedObj> DataArray)
-	{
-		int count = 0; 
-		//bool success;
-		int method = 0; 
-		cout << "Enter insertion method(1 for prefix,2for simple, 3 for fulllength)" << endl;
-		cin >> method;
+    bool insert(HashedObj &&x)
+    {
+        // Insert x as active
+        int currentPos = findPos(x);
+        if (isActive(currentPos))
+            return false;
 
-		typename vector<HashedObj>::iterator it = DataArray.begin();			//print data in array of strings
-		for (it; it != DataArray.end(); it++)
-		{	//i think i did this wrong for both we need to continue to try to insert until it is succuessfully keep increasing if(su)
-			
-			
-			this->insert(*it, method);//choose insertion s=function
-			//cout << count << ". " << *it << endl;			//probably works how do i test
-			count++;
+        if (array[currentPos].info != DELETED)
+            ++currentSize;
 
-		}
-		this->avginserttime = this->InsertionTimerQuadraticHT / count; 
-		return avginserttime;
-	}
+        array[currentPos] = std::move(x);
+        array[currentPos].info = ACTIVE;
 
-	bool insert(HashedObj&& x)
-	{
-		// Insert x as active
-		int currentPos = findPos(x);				//set to zero for collision finding
-		if (isActive(currentPos))
-			return false;
+        // Rehash; see Section 5.5
+        if (currentSize > array.size() / 2)
+            rehash();
 
-		if (array[currentPos].info != DELETED)
-			++currentSize;
+        return true;
+    }
 
-		array[currentPos] = std::move(x);
-		array[currentPos].info = ACTIVE;
+    bool remove(const HashedObj &x)
+    {
+        int currentPos = findPos(x);
+        if (!isActive(currentPos))
+            return false;
 
-		// Rehash; see Section 5.5
-		if (currentSize > array.size() / 2)
-			rehash();
+        array[currentPos].info = DELETED;
+        return true;
+    }
 
-		return true;
-	}
-
-
-
-	double SearchQuadraticHT(vector<HashedObj> QueryArray)
-	{
-		//loop through queryarray and search the hash table for each object 
-		bool success = false;
-		int searchcount = 0;				//used to track average 
-		typename vector<HashedObj>::iterator it = QueryArray.begin();			//print data in array of strings
-		for (it; it != QueryArray.end(); it++)
-		{
-			//cout << count << ". " << *it << endl;
-			//count++;
-			//this->insert(*it);
-			searchcount++;
-			auto searcht1 = high_resolution_clock::now();
-			//cout << "Searching for this: "<< *it << endl;				//print which item we are searching for 
-			success = this->contains(*it);								//search for the value within the table
-		//	cout << "Is found: " << success << endl;					//if found or not 
-			auto searcht2 = high_resolution_clock::now();
-			auto duration1 = duration_cast<microseconds>(searcht2 - searcht1);
-
-
-
-			this->SearchTimerQuadraticHT = this->SearchTimerQuadraticHT + duration1.count();  // send time to average 
-		}
-
-		double timeavg = 0.0;
-		timeavg = this->SearchTimerQuadraticHT / searchcount;
-		return timeavg;
-
-	}
-
-	bool remove(const HashedObj& x)
-	{
-		int currentPos = findPos(x);
-		if (!isActive(currentPos))
-			return false;
-
-		array[currentPos].info = DELETED;
-		return true;
-	}
-
-	enum EntryType { ACTIVE, EMPTY, DELETED };
+   enum EntryType { ACTIVE, EMPTY, DELETED };
 
 private:
-	struct HashEntry
-	{
-		HashedObj element;
-		EntryType info;
+    struct HashEntry
+    {
+        HashedObj element;
+        EntryType info;
 
-		HashEntry(const HashedObj& e = HashedObj{ }, EntryType i = EMPTY)
-			: element{ e }, info{ i } { }
+        HashEntry(const HashedObj &e = HashedObj{}, EntryType i = EMPTY)
+            : element{e}, info{i} {}
 
-		HashEntry(HashedObj&& e, EntryType i = EMPTY)
-			: element{ std::move(e) }, info{ i } { }
-	};
+        HashEntry(HashedObj &&e, EntryType i = EMPTY)
+            : element{std::move(e)}, info{i} {}
+    };
 
-	vector<HashEntry> array;
-	int currentSize;
+    vector<HashEntry> array;
+    int currentSize;
 
+    bool isActive(int currentPos) const
+    {
+        return array[currentPos].info == ACTIVE;
+    }
 
-	//initalize in constuctore 
-	int InsertionTimerQuadraticHT;  //holds time to complete all insertions 
-	int CollisionsQuadraticHT;		 //tracks number of collisions, put inisde findpos() while loop 
-	int SearchTimerQuadraticHT;
-	int avgsearchtime;
-	int avginserttime; 
+    int findPos(const HashedObj &x) const
+    {
+        int offset = 1;
+        int currentPos = default_hash(x);
 
+        while (array[currentPos].info != EMPTY && array[currentPos].element != x)
+        {
+            currentPos += offset; // Compute ith probe, since current position is just plus one each time 
+            offset += 2;
+            if (currentPos >= array.size())
+                currentPos -= array.size();
+        }
 
-	bool isActive(int currentPos) const
-	{
-		return array[currentPos].info == ACTIVE;
-	}
+        return currentPos;
+    }
 
-	int findPos(const HashedObj& x) //const
-	{
-		int offset = 1;
-		int currentPos = prefixHash(x);//myhash(x);//fullHash(x);						//myhash
-		int count = 0; 
-		while (array[currentPos].info != EMPTY &&
-			array[currentPos].element != x)
-		{
-			count++;
-			this->CollisionsQuadraticHT = count + this->CollisionsQuadraticHT;
-			currentPos += offset;  // Compute ith probe
-			offset += 2;
-			if (currentPos >= array.size())
-				currentPos -= array.size();
+    int findPos_simple(const HashedObj &x) const
+    {
+        int offset = 1;
+        int currentPos = simple_hash(x);
 
-		//	count += 1;
-		//	cout << "Collisions: " << count << endl;
-			//*collisioncount = count;
-		}
-		//this->CollisionsQuadraticHT = count + this->CollisionsQuadraticHT;
-		//*collisioncount = count;
-		return currentPos;
-	}
+        while (array[currentPos].info != EMPTY && array[currentPos].element != x)
+        {
+            currentPos += offset; // Compute ith probe
+            offset += 2;
+            if (currentPos >= array.size())
+                currentPos -= array.size();
+        }
 
-	void rehash()
-	{
-		vector<HashEntry> oldArray = array;
+        return currentPos;
+    }
 
-		// Create new double-sized, empty table
-		array.resize(nextPrime(2 * oldArray.size()));
-		for (auto& entry : array)
-			entry.info = EMPTY;
+    int findPos_prefix(const HashedObj &x) const
+    {
+        int offset = 1;
+        int currentPos = prefix_hash(x);
 
-		// Copy table over
-		currentSize = 0;
-		for (auto& entry : oldArray)
-			if (entry.info == ACTIVE)
-				insert(std::move(entry.element));
-	}
+        while (array[currentPos].info != EMPTY && array[currentPos].element != x)
+        {
+            currentPos += offset; // Compute ith probe
+            offset += 2;
+            if (currentPos >= array.size())
+                currentPos -= array.size();
+        }
 
+        return currentPos;
+    }
 
-	//same function but now it will allow for 
-	int findPosinsert(const HashedObj& x, int hashfunction) //
-	{
-		int offset = 1;
-		int currentPos = 0;
-		if (hashfunction == 1)							//allows for choosing which has function to use 
-		{
-			currentPos = prefixHash(x);						//myhash
-		}
-		else if (hashfunction == 2)
-		{
-			currentPos = simpleHash(x);
-		}
-		else
-		{
-			currentPos = fullHash(x);
+    int findPos_full(const HashedObj &x) const
+    {
+        int offset = 1;
+        int currentPos = full_hash(x);
 
-		}
+        while (array[currentPos].info != EMPTY && array[currentPos].element != x)
+        {
+            currentPos += offset; // Compute ith probe
+            offset += 2;
+            if (currentPos >= array.size())
+                currentPos -= array.size();
+        }
 
-		int count = 0;
-		while (array[currentPos].info != EMPTY &&
-			array[currentPos].element != x)
-		{
-			count++;
-			this->CollisionsQuadraticHT = count + this->CollisionsQuadraticHT;
-			currentPos += offset;  // Compute ith probe
-			offset += 2;
-			if (currentPos >= array.size())
-				currentPos -= array.size();
+        return currentPos;
+    }
 
-			//	count += 1;
-			//	cout << "Collisions: " << count << endl;
-				//*collisioncount = count;
-		}
-		//this->CollisionsQuadraticHT = count + this->CollisionsQuadraticHT;
-		//*collisioncount = count;
-		return currentPos;
-	}
+    void rehash()
+    {
+        vector<HashEntry> oldArray = array;
 
-	//Hash fucntions 
-	size_t myhash(const HashedObj& x) const
-	{
-		static hash<HashedObj> hf;
-		return hf(x) % array.size();
-	}
+        // Create new double-sized, empty table
+        array.resize(nextPrime(2 * oldArray.size()));
+        for (auto &entry : array)
+            entry.info = EMPTY;
 
+        // Copy table over
+        currentSize = 0;
+        for (auto &entry : oldArray)
+            if (entry.info == ACTIVE)
+                insert(std::move(entry.element));
+    }
 
-	unsigned int fullHash(const HashedObj& key) const
-	{
-		unsigned int hashval = 0;
-		for (char ch : key)
-		{
-			hashval = 37 * hashval + ch;
+    size_t default_hash(const HashedObj &x) const
+    {
+        static hash<HashedObj> hf;
+        return hf(x) % array.size();
+    }
 
-		}
-		return hashval % this->array.size();// this->currentSize;
-	}
+    size_t simple_hash(const HashedObj &x) const
+    {
+        int hashVal = 0;
 
-	unsigned int simpleHash(const HashedObj& key)
-	{
-		unsigned int hashval = 0;
-		for (char ch : key)
-			hashval += ch; 
-		return hashval % this->array.size();
-	}
+        for (char ch : x)
+            hashVal += ch;
 
+        return hashVal % array.size();
+    }
 
-	unsigned int prefixHash(const HashedObj& key) 
-	{
-		int output = 0;
+    size_t prefix_hash(const HashedObj &x) const
+    {
+        return (x[0] + 27 * x[1] + 729 * x[2]) % array.size();
+    }
 
+    size_t full_hash(const HashedObj &x) const
+    {
+        unsigned int hashVal = 0;
 
-		if (key.size() >= 2)
-		{
-			output = ((key[0] + (27 * key[1]) + (729 * key[2])) % (this->array.size()));
-		}
-		else
-		{
-			output = key[0]  % this->array.size();
-			//cout << "\nOUTPUT: " << output;
-		}
-		
-		return output; 
-	}
+        for (char ch : x)
+            hashVal = 37 * hashVal + ch;
 
-
-
-
+        return hashVal % array.size();
+    }
 };
 }
 #endif
