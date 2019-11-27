@@ -1,5 +1,11 @@
 #include "App.h"
 
+/*
+Authors: Parker Guillen, Josh Mathia
+Class: Cpts 223
+Project: PA#6
+*/
+
 int main()
 {
     Chaining::HashTable<string> ChainingHashT;

@@ -1,3 +1,9 @@
+/*
+Authors: Parker Guillen, Josh Mathia
+Class: Cpts 223
+Project: PA#6
+*/
+
 #ifndef SEPARATE_CHAINING_H
 #define SEPARATE_CHAINING_H
 

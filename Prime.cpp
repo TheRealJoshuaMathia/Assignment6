@@ -1,3 +1,9 @@
+/*
+Authors: Parker Guillen, Josh Mathia
+Class: Cpts 223
+Project: PA#6
+*/
+
 #include "Prime.h"
 /**
  * Internal method to test if a positive number is prime.

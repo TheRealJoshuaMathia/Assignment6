@@ -1,3 +1,9 @@
+/*
+Authors: Parker Guillen, Josh Mathia
+Class: Cpts 223
+Project: PA#6
+*/
+
 #ifndef QUADRATIC_PROBING_H
 #define QUADRATIC_PROBING_H
 

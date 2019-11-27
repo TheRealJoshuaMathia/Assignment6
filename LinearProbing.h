@@ -1,3 +1,9 @@
+/*
+Authors: Parker Guillen, Josh Mathia
+Class: Cpts 223
+Project: PA#6
+*/
+
 #ifndef LINEAR_PROBING_H
 #define LINEAR_PROBING_H
 
