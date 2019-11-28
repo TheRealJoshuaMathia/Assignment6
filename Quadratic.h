@@ -42,16 +42,16 @@ public:
         return isActive(findPos(x));
     }
     // handle the different quadratic implementation(aim2) to check if the element is contained in the HashTable 
-    bool contains(const HashedObj &x, int hash_code) const
+    bool contains(const HashedObj &x, int hashCode) const
     {
-        switch (hash_code)
+        switch (hashCode)
         {
         case 1:
-            return isActive(findPos_simple(x));
+            return isActive(findPosSimple(x));
         case 2:
-            return isActive(findPos_prefix(x));
+            return isActive(findPosPrefix(x));
         case 3:
-            return isActive(findPos_full(x));
+            return isActive(findPosFull(x));
         default:
             return isActive(findPos(x));
         }
@@ -84,19 +84,19 @@ public:
         return true;
     }
 
-    bool insert(const HashedObj &x, int hash_code)
+    bool insert(const HashedObj &x, int hashCode)
     { 
         int currentPos;
-        switch (hash_code)
+        switch (hashCode)
         {
         case 1:
-            currentPos = findPos_simple(x);
+            currentPos = findPosSimple(x);
             break;
         case 2:
-            currentPos = findPos_prefix(x);
+            currentPos = findPosPrefix(x);
             break;
         case 3:
-            currentPos = findPos_full(x);
+            currentPos = findPosFull(x);
             break;
         default:
             currentPos = findPos(x);
@@ -174,7 +174,7 @@ private:
     int findPos(const HashedObj &x) const
     {
         int offset = 1;
-        int currentPos = default_hash(x);
+        int currentPos = defaultHash(x);
 
         while (array[currentPos].info != EMPTY && array[currentPos].element != x)
         {
@@ -187,10 +187,10 @@ private:
         return currentPos;
     }
 
-    int findPos_simple(const HashedObj &x) const
+    int findPosSimple(const HashedObj &x) const
     {
         int offset = 1;
-        int currentPos = simple_hash(x);
+        int currentPos = simpleHash(x);
 
         while (array[currentPos].info != EMPTY && array[currentPos].element != x)
         {
@@ -203,10 +203,10 @@ private:
         return currentPos;
     }
 
-    int findPos_prefix(const HashedObj &x) const
+    int findPosPrefix(const HashedObj &x) const
     {
         int offset = 1;
-        int currentPos = prefix_hash(x);
+        int currentPos = prefixHash(x);
 
         while (array[currentPos].info != EMPTY && array[currentPos].element != x)
         {
@@ -219,10 +219,10 @@ private:
         return currentPos;
     }
 
-    int findPos_full(const HashedObj &x) const
+    int findPosFull(const HashedObj &x) const
     {
         int offset = 1;
-        int currentPos = full_hash(x);
+        int currentPos = fullHash(x);
 
         while (array[currentPos].info != EMPTY && array[currentPos].element != x)
         {
@@ -251,13 +251,13 @@ private:
                 insert(std::move(entry.element));
     }
 
-    size_t default_hash(const HashedObj &x) const
+    size_t defaultHash(const HashedObj &x) const
     {
         static hash<HashedObj> hf;
         return hf(x) % array.size();
     }
 
-    size_t simple_hash(const HashedObj &x) const
+    size_t simpleHash(const HashedObj &x) const
     {
         int hashVal = 0;
 
@@ -267,12 +267,12 @@ private:
         return hashVal % array.size();
     }
 
-    size_t prefix_hash(const HashedObj &x) const
+    size_t prefixHash(const HashedObj &x) const
     {
         return (x[0] + 27 * x[1] + 729 * x[2]) % array.size();
     }
 
-    size_t full_hash(const HashedObj &x) const
+    size_t fullHash(const HashedObj &x) const
     {
         unsigned int hashVal = 0;
 

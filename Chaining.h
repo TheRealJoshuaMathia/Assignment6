@@ -37,7 +37,7 @@ public:
     explicit HashTable(int size = 101) : currentSize{0}
     {
         theLists.resize(101);
-    }
+    } 
 
     bool contains(const HashedObj &x) const
     {

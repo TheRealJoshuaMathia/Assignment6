@@ -31,16 +31,19 @@ template <typename HashedObj>
 class HashTable
 {
 public:
+    // Constructs a Hash Table with a size of 101
+    // Function is made emtpy explictly by makeEmpty()
     explicit HashTable(int size = 101) : array(nextPrime(size))
     {
         makeEmpty();
     }
 
+    // Checks if the given position is occupied, deleted, or empty
     bool contains(const HashedObj &x) const
     {
         return isActive(findPos(x));
     }
-
+    // Makes the function empty
     void makeEmpty()
     {
         currentSize = 0;
@@ -104,7 +107,6 @@ public:
         EMPTY,
         DELETED
     };
-
 private:
     struct HashEntry
     {
@@ -126,6 +128,10 @@ private:
         return array[currentPos].info == ACTIVE;
     }
 
+    bool isCollision(int currentPos) const
+    {
+        return array[currentPos].info == ACTIVE;
+    }
     int findPos(const HashedObj &x) const
     {
         int currentPos = myhash(x);
@@ -162,6 +168,6 @@ private:
         return hf(x) % array.size();
     }
 };
-}
+} 
 
 #endif

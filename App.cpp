@@ -117,11 +117,14 @@ int main()
     printSearchStats(quadraticFullSearch);
 }
 
-// This function inserts 
+// This function inserts data from the DataArray into the hash table
+// The time of insertion is recorded. Stop - Start 
+// The time of insertion is then returned as well as the number of collisions
+// As well as the number of insertions.
 Stat insertIntoHashT(vector<string> DataArray, Chaining::HashTable<string> hashT)
 {
     Stat data;
-
+    
     auto alg1st = high_resolution_clock::now();
     for (auto it = DataArray.begin(); it != DataArray.end(); ++it)
     {
@@ -130,8 +133,7 @@ Stat insertIntoHashT(vector<string> DataArray, Chaining::HashTable<string> hashT
             hashT.insert(*it);
             data.count++;
         }
-        
-            //data.collisions++;
+        data.collisions++;
     }
     auto algsp = high_resolution_clock::now();
 
@@ -140,6 +142,10 @@ Stat insertIntoHashT(vector<string> DataArray, Chaining::HashTable<string> hashT
     return data;
 }
 
+// This function inserts data from the DataArray into the hash table
+// The time of insertion is recorded. Stop - Start 
+// The time of insertion is then returned as well as the number of collisions
+// As well as the number of insertions.
 Stat insertIntoHashT(vector<string> DataArray, Linear::HashTable<string> hashT)
 {
     Stat data;
@@ -152,9 +158,9 @@ Stat insertIntoHashT(vector<string> DataArray, Linear::HashTable<string> hashT)
             hashT.insert(*it);
             data.count++;
         }
-        else if (hashT.contains(*it))
+        else if(hashT.contains(*it))
         {
-            data.collisions++;
+            data.collisions++; 
         }
     }
     auto algsp = high_resolution_clock::now();
@@ -165,6 +171,10 @@ Stat insertIntoHashT(vector<string> DataArray, Linear::HashTable<string> hashT)
     return data;
 }
 
+// This function inserts data from the DataArray into the hash table
+// The time of insertion is recorded. Stop - Start 
+// The time of insertion is then returned as well as the number of collisions
+// As well as the number of insertions.
 Stat insertIntoHashT(vector<string> DataArray, Quadratic::HashTable<string> hashT)
 {
     Stat data;
@@ -177,7 +187,7 @@ Stat insertIntoHashT(vector<string> DataArray, Quadratic::HashTable<string> hash
             hashT.insert(*it);
             data.count++;
         }
-        else if (hashT.contains(*it))
+       else if (hashT.contains(*it))
         {
             data.collisions++;
         }
@@ -189,6 +199,7 @@ Stat insertIntoHashT(vector<string> DataArray, Quadratic::HashTable<string> hash
     return data;
 }
 //This function prints the statisitcs for each insert function
+//Prints the Insertion Time, Number of Insertions, Number of COllisions, Time per insertion
 void printInsertStats(Stat data)
 {
     cout << "Insertion Time: " << data.timer << endl
@@ -198,6 +209,7 @@ void printInsertStats(Stat data)
          << endl;
 }
 //This function prints the statistics for each search function
+//Prints search time, number of searches, and Timer per search
 void printSearchStats(Stat data)
 {
     cout << "Search Time: " << data.timer << endl
@@ -206,6 +218,11 @@ void printSearchStats(Stat data)
          << endl;
 }
 
+// This function inserts data from the DataArray into the hash table
+// The time of insertion is recorded. Stop - Start 
+// The time of insertion is then returned as well as the number of collisions
+// As well as the number of insertions.
+// This function uses the hash simple method
 Stat insertIntoHashTSimple(vector<string> DataArray, Quadratic::HashTable<string> hashT)
 {
     Stat data;
@@ -368,7 +385,6 @@ Stat searchHashTFull(vector<string> QueryArray, Quadratic::HashTable<string> has
         hashT.contains(*i, 3);
         data.count++;
     }
-
     auto algsp = chrono::high_resolution_clock::now();
 
     auto duration = duration_cast<microseconds>(algsp - alg1st);
